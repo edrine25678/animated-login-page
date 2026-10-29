@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup Animation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #111;
+        }
+
+        .container {
+            position: relative;
+            width: min(850px, 100%);
+            height: 480px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 111, 54, 0.75);
+            border-radius: 2px;
+            background: #242329;
+            box-shadow: 0 0 18px rgba(238, 91, 39, 0.45);
+        }
+
+        .container::before {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f16a32, #8f4025);
+            content: '';
+            transform: skewX(38deg);
+            transform-origin: top;
+            transition: 1s ease-in-out;
+        }
+
+        .container.active::before {
+            left: -50%;
+            transform: skewX(-38deg);
+        }
+
+        .form-box,
+        .info-box {
+            position: absolute;
+            top: 0;
+            display: flex;
+            width: 50%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            transition: 0.7s ease-in-out;
+        }
+
+        .form-box {
+            z-index: 4;
+            padding: 40px 56px;
+        }
+
+        .form-box.Login {
+            left: 0;
+        }
+
+        .container.active .form-box.Login {
+            left: -50%;
+        }
+
+        .form-box.Register {
+            right: -50%;
+        }
+
+        .container.active .form-box.Register {
+            right: 0;
+        }
+
+        .info-box {
+            z-index: 2;
+            padding: 40px;
+            color: #fff;
+        }
+
+        .info-box.Login {
+            left: 0;
+            transform: translateX(-100%);
+            transition-delay: 0s;
+        }
+
+        .container.active .info-box.Login {
+            transform: translateX(0);
+            transition-delay: 0.2s;
+        }
+
+        .info-box.Register {
+            right: 0;
+            align-items: flex-end;
+            text-align: right;
+            transform: translateX(0);
+            transition-delay: 0.2s;
+        }
+
+        .container.active .info-box.Register {
+            transform: translateX(100%);
+            transition-delay: 0s;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .info-box h2 {
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            max-width: 250px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .info-box.Register p {
+            width: min(330px, 100%);
+            max-width: none;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            height: 45px;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.85);
+            transition: border-color 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-bottom-color: #f16a32;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #fff;
+            font-size: 0.95em;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.88);
+            opacity: 1;
+        }
+
+        .input-group svg {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            fill: currentColor;
+        }
+
+        .btn {
+            width: 100%;
+            height: 40px;
+            margin: 14px 0 12px;
+            border: 1px solid rgba(255, 180, 129, 0.6);
+            border-radius: 24px;
+            background: linear-gradient(180deg, #f2763d, #8d3e25);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: linear-gradient(180deg, #ff8950, #a94c2d);
+        }
+
+        .switch-link {
+            color: #fff;
+            font-size: 0.85em;
+            text-align: center;
+        }
+
+        .switch-link a {
+            display: inline-block;
+            margin-top: 3px;
+            color: #ed7445;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .switch-link a:hover {
+            color: #ff9a6d;
+            text-decoration: underline;
+        }
+
+        .form-box.Register .animation {
+            transform: translateX(120%);
+            transition: 0.7s ease;
+            opacity: 0;
+            filter: blur(10px);
+        }
+
+        .container.active .animation {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+            transition: 0.7s ease;
+            transition-delay: calc(0.1s * var(--i));
+        }
+
+        .form-box.Login .animation {
+            transform: translateX(0);
+            opacity: 1;
+            transition: 0.7s ease;
+            transition-delay: calc(0.1s * var(--i));
+        }
+
+        .container.active .form-box.Login .animation {
+            transform: translateX(-120%);
+            opacity: 0;
+            filter: blur(10px);
+            transition-delay: calc(0.05s * var(--i));
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+
+            .container {
+                height: 620px;
+            }
+
+            .container::before {
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 35%;
+                transform: none;
+                transition: top 1s ease-in-out;
+            }
+
+            .container.active::before {
+                top: 65%;
+                left: 0;
+                transform: none;
+            }
+
+            .form-box,
+            .info-box {
+                width: 100%;
+                height: 65%;
+                padding: 28px;
+            }
+
+            .form-box {
+                top: 35%;
+            }
+
+            .form-box.Login {
+                left: 0;
+            }
+
+            .container.active .form-box.Login {
+                left: -100%;
+            }
+
+            .form-box.Register {
+                right: -100%;
+            }
+
+            .container.active .form-box.Register {
+                right: 0;
+            }
+
+            .info-box {
+                height: 35%;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .info-box.Register {
+                right: 0;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .info-box.Login {
+                left: 0;
+            }
+
+            .container.active .info-box.Login {
+                transform: translateX(0);
+            }
+
+            .container.active .info-box.Register {
+                transform: translateX(100%);
+            }
+
+            .info-box h2 {
+                margin-bottom: 6px;
+                font-size: 1.6em;
+            }
+
+            .info-box p {
+                width: 100%;
+                max-width: 100%;
+                font-size: 0.88em;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" id="container">
+        <section class="form-box Login">
+            <h2 class="animation" style="--i:0;">Login</h2>
+            <form action="#" autocomplete="on">
+                <div class="input-group animation" style="--i:1;">
+                    <input type="text" name="username" placeholder="Username" aria-label="Username" autocomplete="username" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+                </div>
+                <div class="input-group animation" style="--i:2;">
+                    <input type="password" name="password" placeholder="Password" aria-label="Password" autocomplete="current-password" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2ZM10 7a2 2 0 1 1 4 0v2h-4V7Z"/></svg>
+                </div>
+                <button type="submit" class="btn animation" style="--i:3;">Login</button>
+                <div class="switch-link animation" style="--i:4;">
+                    <p>Don't have an account?<br><a href="#signup" id="to-signup">Sign Up</a></p>
+                </div>
+            </form>
+        </section>
+
+        <section class="info-box Login">
+            <h2>WELCOME!</h2>
+            <p>We're delighted to have you here. If you need any assistance, feel free to reach out.</p>
+        </section>
+
+        <section class="info-box Register">
+            <h2>WELCOME<br>BACK!</h2>
+            <p>We are happy to have you with us again. If you need anything, we are here to help.</p>
+        </section>
+
+        <section class="form-box Register">
+            <h2 class="animation" style="--i:0;">Register</h2>
+            <form action="#" autocomplete="on">
+                <div class="input-group animation" style="--i:1;">
+                    <input type="text" name="new-username" placeholder="Username" aria-label="Username" autocomplete="username" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+                </div>
+                <div class="input-group animation" style="--i:2;">
+                    <input type="email" name="email" placeholder="Email" aria-label="Email" autocomplete="email" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
+                </div>
+                <div class="input-group animation" style="--i:3;">
+                    <input type="password" name="new-password" placeholder="Password" aria-label="Password" autocomplete="new-password" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2ZM10 7a2 2 0 1 1 4 0v2h-4V7Z"/></svg>
+                </div>
+                <button type="submit" class="btn animation" style="--i:4;">Register</button>
+                <div class="switch-link animation" style="--i:5;">
+                    <p>Already have an account?<br><a href="#login" id="to-login">Sign In</a></p>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const container = document.getElementById('container');
+        const toSignupBtn = document.getElementById('to-signup');
+        const toLoginBtn = document.getElementById('to-login');
+
+        toSignupBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            container.classList.add('active');
+        });
+
+        toLoginBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            container.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
